@@ -29,6 +29,8 @@ Here is my application code:
 <YOUR CODE OR REPOSITORY URL>
 
 Create a Dockerfile for this application.
+
+Make sure to create the whole repository exactly as the template given here so that I can build the Docker image as a GHCR image.
 ```
 
 The assistant should:
