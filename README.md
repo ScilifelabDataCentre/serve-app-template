@@ -78,7 +78,9 @@ Copier is useful when there is no existing application repository and a clean st
 
 ```bash
 pipx install copier
-copier copy https://github.com/ScilifelabDataCentre/serve-template-multi-app my-serve-app
+copier copy --vcs-ref v0.1.0 \
+  https://github.com/ScilifelabDataCentre/serve-template-multi-app \
+  my-apps
 ```
 
 Copier asks for the application type and generates only that framework's files.
