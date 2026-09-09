@@ -1,6 +1,7 @@
+
 # SciLifeLab Serve multi-app template
 
-A single repository for preparing applications for [SciLifeLab Serve](https://serve.scilifelab.se/).
+This repository helps you turn an idea or existing code into a web application that can be deployed on [SciLifeLab Serve](https://serve.scilifelab.se/). You can also use AI agents, coding assistants, or chatbots to help with development.
 
 Supported application types:
 
@@ -10,122 +11,261 @@ Supported application types:
 - Shiny (R)
 - Custom Python web apps, with FastAPI as the starter example
 
-There are two ways to use this repository:
+**You do not need to know or specify the application type. If you use a chatbot, AI or coding assistant, give it the prompt(s) mentioned below. It will create the application for you.**
 
-1. **You already have an application:** use the matching Dockerfile under `profiles/` as the reference and adapt it to the existing code.
-2. **You want a new starter project:** use Copier to generate one clean framework-specific repository.
+---
 
-For existing applications, Copier is not required.
+## Deploy your application on [SciLifeLab Serve](https://serve.scilifelab.se/) in three quick steps!
 
-## 1. Existing application: create the Dockerfile
+### Step 1. Choose how you want to start
 
-A user can provide this repository link and their application code or repository to the prompt:
+#### a. I want to use a coding assistant, AI, or chatbot to create the application
+
+##### i. I only have an idea
+
+Give this prompt with your idea to a coding assistant, AI or chatbot:
 
 ```text
-Use this repository as the Docker setup reference:
+Use this repository as the reference:
 https://github.com/ScilifelabDataCentre/serve-template-multi-app
 
-Here is my application code:
-<YOUR CODE OR REPOSITORY URL>
+Create a small working web application for this idea:
 
-Create a Dockerfile for this application.
+<DESCRIBE YOUR IDEA>
 
-Make sure to create the whole repository exactly as the template given here so that I can build the Docker image as a GHCR image.
+Create all files needed to run it locally with Docker and deploy it through
+GitHub to SciLifeLab Serve.
+
+Keep the application simple. If you need more information about what I want,
+ask me before making an important assumption.
+
+Also create a README with the exact commands I should run to test and deploy it.
 ```
+---
 
-The assistant should:
+##### ii. I already have some code
 
-1. inspect the code, dependencies, assets and entry point;
-2. use the application type stated by the user, if given;
-3. otherwise identify it only when the code makes it clear;
-4. if the application type or intended entry point is unclear, ask the user instead of guessing;
-5. read `AGENTS.md` and the matching Dockerfile under `profiles/`;
-6. adapt paths, dependencies and the startup command to the real repository; and
-7. build and smoke-test the image when Docker is available.
+Your code can be:
 
+* a GitHub repository;
+* a local directory;
+* one or more files; or
+* code pasted directly into the conversation.
 
-| Application | Reference Dockerfile | Default port |
-| --- | --- | ---: |
-| Gradio | `profiles/gradio/Dockerfile` | 7860 |
-| Streamlit | `profiles/streamlit/Dockerfile` | 8501 |
-| Dash | `profiles/dash/Dockerfile` | 8000 |
-| Shiny | `profiles/shiny/Dockerfile` | 3838 |
-| Custom Python | `profiles/custom/Dockerfile` | 8000 |
-
-Example:
+Give this prompt with your code to your coding assistant, AI, or chatbot:
 
 ```text
-existing Dash repository
-        |
-        v
-inspect code and dependencies
-        |
-        v
-profiles/dash/Dockerfile
-        |
-        v
-adapt COPY paths, assets and startup command
-        |
-        v
-add Dockerfile to the existing repository
+Use this repository as the reference:
+https://github.com/ScilifelabDataCentre/serve-template-multi-app
+
+Here is my existing code:
+
+<REPOSITORY LINK, LOCAL DIRECTORY, CODE PASTED HERE, OR FILES ATTACHED>
+
+Turn this into a working web application that I can run with Docker and deploy
+to SciLifeLab Serve.
+
+Preserve my existing application logic.
+
+Inspect the code and decide the appropriate setup yourself. If the code does
+not make the intended application clear, ask me what I want the application
+to do before deciding.
+
+Create all files needed to run it locally with Docker and deploy it through
+GitHub to SciLifeLab Serve.
+
+Keep the application simple. If you need more information about what I want,
+ask me before making an important assumption.
+
+Also create a README with the exact commands I should run to test and deploy it.
 ```
 
-The profile Dockerfiles are starting points. They may be adapted to the actual source layout, but the relevant Serve requirements must be preserved.
 
-## 2. New application: generate a project with Copier
+The coding assistant, AI, or chatbot should create a complete project containing the application code, dependencies, Dockerfile, GitHub workflow, and deployment instructions.
 
-Copier is useful when there is no existing application repository and a clean starter project is wanted.
+---
+
+#### b. I want to create a starter project to code by myself
+
+Use this option if you want a clean starter repository template and plan to write or copy the application code yourself.
+
+Install Copier:
 
 ```bash
 pipx install copier
+```
+
+Create a new project:
+
+```bash
 copier copy --vcs-ref v0.1.0 \
   https://github.com/ScilifelabDataCentre/serve-template-multi-app \
   my-apps
 ```
 
-Copier asks for the application type and generates only that framework's files.
-
-Benefits:
-
-- one maintained template can create several framework-specific starters;
-- generated projects stay clean and do not contain unused framework files;
-- generated projects keep template metadata for controlled updates with `copier update`.
-
-Application code under `app/` is user-owned. Template updates are intended mainly for shared files such as validation, CI and guidance.
-
-Do not change `app_type` during `copier update`. To move to another framework, generate a new project and migrate the application code deliberately.
-
-## 3. GitHub and SciLifeLab Serve flow
-
-After the repository has a working Dockerfile:
-
-1. commit the project to Git;
-2. create or use a GitHub repository;
-3. push the code;
-4. let GitHub Actions validate, build and smoke-test the container;
-5. publish the image to GitHub Container Registry (GHCR);
-6. make the package publicly pullable if required;
-7. copy the exact published image tag; and
-8. use that image in SciLifeLab Serve.
+Copier will ask a few setup questions and create the new directory:
 
 ```text
-GitHub repository
-      |
-      v
-GitHub Actions
-  validation + Docker build + smoke test
-      |
-      v
-GHCR container image
-      |
-      v
-SciLifeLab Serve
+my-app/
+├── app/
+├── Dockerfile
+├── README.md
+├── AGENTS.md
+├── .github/
+├── scripts/
+└── ...
 ```
 
-GitHub hosts the source and builds the image. SciLifeLab Serve runs the published image.
+Then:
+
+```bash
+cd my-app
+```
+
+Put or write your application code inside:
+
+```text
+app/
+```
+
+Follow the generated `README.md` for any application-specific requirements.
+
+If you are developing the template itself locally, you can test it without GitHub:
+
+```bash
+cd serve-template-multi-app
+copier copy . ../my-app
+```
+
+Your complete project should contain the application code, dependencies, Dockerfile, GitHub workflow, and deployment instructions.
+
+---
+
+### Step 2. Build the Docker image using GitHub
+
+By now you should have your application codes ready in a project repository. Follow the generated project's README. The common test and deployment steps are also described there. Execute them. If all okay then follow the next steps.
 
 
-## 4. Repository structure and design
+#### a. Put the project on GitHub
+
+Create an empty GitHub repository for your application.
+
+Then, from your application project directory:
+
+```bash
+git init
+git add .
+git commit -m "Initial application"
+git branch -M main
+git remote add origin https://github.com/<YOUR-USER-OR-ORG>/<YOUR-REPOSITORY>.git
+git push -u origin main
+```
+
+
+#### b. Build the Docker image
+
+Projects created from this template include a GitHub Actions workflow.
+
+After pushing to `main`:
+
+1. Open your repository on GitHub.
+2. Open **Actions**.
+3. Wait for the build and container tests to finish successfully.
+4. Open the generated package under **Packages**.
+5. Copy the exact `ghcr.io/...:<tag>` image name.
+
+The image will look similar to:
+
+```text
+ghcr.io/<organization>/<repository>:<unique-tag>
+```
+
+#### c. Make the container image public
+
+[SciLifeLab Serve](https://serve.scilifelab.se/) must be able to download the image.
+
+On GitHub:
+
+**Package → Package settings → Change visibility → Public**
+
+---
+
+### Step 3. Deploy on [SciLifeLab Serve](https://serve.scilifelab.se/)
+
+Once the Docker image is available publicly:
+
+1. Sign in to [SciLifeLab Serve](https://serve.scilifelab.se/).
+2. Create a project, or open an existing project.
+3. Follow the generated application's README for the appropriate app creation form.
+4. Paste the public GHCR image address into the **Image** field.
+5. Enter the port shown in the generated README or Dockerfile.
+6. Add the GitHub repository URL as the **Source code URL**.
+7. Fill in the title, description, permissions, and other application information.
+8. Create the app.
+
+The image value should look similar to:
+
+```text
+ghcr.io/<organization>/<repository>:<unique-tag>
+```
+
+Congratulations! Your application is now published and open for all!
+
+---
+
+## (Optional) Run your application locally
+
+The generated project and codes should contain the exact command and port for your application. Follow its README in case it differs from the example below.
+
+#### a. Install Docker
+
+Install and start **Docker Desktop** before continuing.
+
+Docker Desktop installation: `DOCKER_DESKTOP_INSTALL_LINK`
+
+#### Build the image
+
+From the directory containing the `Dockerfile`:
+
+```bash
+docker build --platform linux/amd64 -t my-app:local .
+```
+
+Check that the image exists:
+
+```bash
+docker image ls
+```
+
+#### Run the image
+
+The generated README should tell you which port the application uses.
+
+Run:
+
+```bash
+docker run --rm -p <PORT>:<PORT> my-app:local
+```
+
+For example, if the application uses port `8000`:
+
+```bash
+docker run --rm -p 8000:8000 my-app:local
+```
+
+Then open:
+
+```text
+http://localhost:<PORT>
+```
+
+in your browser.
+
+Stop the application with `Ctrl+C`.
+
+---
+
+## Repository structure and design
 
 ```text
 .
@@ -145,11 +285,11 @@ GitHub hosts the source and builds the image. SciLifeLab Serve runs the publishe
     └── SERVE_REQUIREMENTS.md  # Serve requirements and source audit
 ```
 
-Specialized Serve products such as TissUUmaps and Depictio are intentionally outside this template because they have separate deployment workflows.
+Specialized [SciLifeLab Serve](https://serve.scilifelab.se/) products such as TissUUmaps and Depictio are intentionally outside this template because they have separate deployment workflows.
 
 ### Adding another framework
 
-1. Confirm it fits the current Serve container requirements.
+1. Confirm it fits the current [SciLifeLab Serve](https://serve.scilifelab.se/) container requirements.
 2. Record its entry point, startup command, port, runtime user, architecture, storage needs and health check.
 3. Add `profiles/<framework>/Dockerfile`.
 4. Add the framework to `copier.yml`.
@@ -157,10 +297,12 @@ Specialized Serve products such as TissUUmaps and Depictio are intentionally out
 6. Add framework-specific validation and tests.
 7. Update `AGENTS.md` and `docs/SERVE_REQUIREMENTS.md`.
 
-## 5. Development, contribution and release
+---
+
+## Development, contribution and release
 
 1. read `AGENTS.md`;
-2. verify any changed Serve assumption against the current documentation;
+2. verify any changed [SciLifeLab Serve](https://serve.scilifelab.se/) assumption against the current documentation;
 3. update `docs/SERVE_REQUIREMENTS.md` when needed;
 4. run the template tests and render checks; and
 5. build affected profiles for `linux/amd64` when Docker is available.
@@ -181,7 +323,7 @@ docker build --platform linux/amd64 -t serve-template-smoke:test .
 
 ### Release sequence
 
-1. Verify the current SciLifeLab Serve documentation.
+1. Verify the current [SciLifeLab Serve](https://serve.scilifelab.se/) documentation.
 2. Update `docs/SERVE_REQUIREMENTS.md` if needed.
 3. Run the tests and render checks.
 4. Bump `template_version` in `template/.serve-template.json.jinja`.
@@ -192,20 +334,23 @@ docker build --platform linux/amd64 -t serve-template-smoke:test .
 
 Versioned Git tags are important because Copier uses them when comparing template versions during `copier update`.
 
-## 6. Security and data handling
+---
+
+## Security and data handling
 
 - Do not commit credentials, tokens or secrets.
 - Do not report credentials, sensitive data or exploitable security details in public issues.
-- Generated applications are intended for SciLifeLab Serve's public application model.
+- Generated applications are intended for [SciLifeLab Serve](https://serve.scilifelab.se/)'s public application model.
 - Do not include personal or sensitive data, user databases or committed credentials in generated applications.
-- For platform-specific security or data-handling questions, follow the current SciLifeLab Serve documentation and use the Serve team's published support channel when clarification is needed.
+- For platform-specific security or data-handling questions, follow the current [SciLifeLab Serve](https://serve.scilifelab.se/) documentation and use the [SciLifeLab Serve](https://serve.scilifelab.se/) team's published support channel when clarification is needed.
 
-## 7. References and license
+## References and license
 
-- SciLifeLab Serve documentation: https://serve.scilifelab.se/docs/
-- Copier documentation: https://copier.readthedocs.io/
-- Copier update workflow: https://copier.readthedocs.io/en/stable/updating/
+---
 
-The current Serve documentation is the source of truth for deployment requirements. `docs/SERVE_REQUIREMENTS.md` records the rules and framework-specific exceptions used by this template.
+- [SciLifeLab Serve documentation](https://serve.scilifelab.se/docs/)
+- [Copier documentation](https://copier.readthedocs.io/)
+
+The current [SciLifeLab Serve documentation](https://serve.scilifelab.se/docs/) is the source of truth for deployment requirements. `docs/SERVE_REQUIREMENTS.md` records the rules and framework-specific exceptions used by this template.
 
 License: MIT.
