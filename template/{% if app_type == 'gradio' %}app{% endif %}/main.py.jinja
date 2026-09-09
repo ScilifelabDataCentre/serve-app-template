@@ -1,0 +1,18 @@
+import gradio as gr
+
+
+def greet(name: str) -> str:
+    name = name.strip() or "researcher"
+    return f"Hello, {name}. This Gradio app is ready for SciLifeLab Serve."
+
+
+demo = gr.Interface(
+    fn=greet,
+    inputs=gr.Textbox(label="Name"),
+    outputs=gr.Textbox(label="Message"),
+    title="{{ project_name }}",
+    description="{{ project_description }}",
+)
+
+if __name__ == "__main__":
+    demo.launch(share=False)

@@ -1,0 +1,12 @@
+# Streamlit application rules
+
+This directory is the user-owned application area.
+
+- Keep `app.py` as the main entry point. The Dockerfile copies it directly into `WORKDIR`, matching the current Serve guide pattern.
+- Keep port 8501 and `--server.address=0.0.0.0`.
+- Keep Streamlit usage-statistics gathering disabled in the container command.
+- Do not add application user registration, a user database, sensitive data, or persistent per-user state.
+- Use approved Serve storage mount paths only for non-sensitive files required by the app.
+- Keep runtime dependencies in `requirements.txt`; starter policy uses exact `==` pins.
+
+Reference: https://serve.scilifelab.se/docs/application-hosting/streamlit/

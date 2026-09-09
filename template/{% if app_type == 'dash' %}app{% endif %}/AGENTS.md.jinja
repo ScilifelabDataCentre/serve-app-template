@@ -1,0 +1,22 @@
+# Dash application rules
+
+This directory is the user-owned application area.
+
+- Keep `app.py` and expose `server = app.server` so Gunicorn can load `app:server`.
+- Keep Gunicorn bound to `0.0.0.0:8000` and Serve port 8000.
+- This template deliberately runs Dash as non-root UID 1000. The current Dash guide demonstrates Gunicorn/8000 but does not itself show that user rule; UID 1000 is template policy based on the shared container contract.
+- Do not add application user registration, a user database, sensitive data, or persistent per-user state.
+- Use approved Serve storage mount paths only for non-sensitive files required by the app.
+- Keep runtime dependencies in `requirements.txt`; starter policy uses exact `==` pins.
+
+## Adapting an existing Dash app
+
+When the user supplies Dash code, preserve its callbacks/layout/business logic and make the smallest deployment adaptations:
+
+1. Put the main Dash module at `app/app.py` (supporting modules/assets can remain beside it).
+2. Ensure it defines the Dash instance and `server = app.server` so Gunicorn can import `app:server`.
+3. If the original code has `app.run(...)`, keep it only under `if __name__ == "__main__":` for optional local development; production is started by the generated Dockerfile with Gunicorn.
+4. Reuse provided dependency metadata. If it is absent, resolve the imports and pin the versions actually tested rather than guessing pins.
+5. Do not change the Dockerfile merely to match a local development port. The generated Serve profile owns port 8000 and the production Gunicorn command.
+
+Reference: https://serve.scilifelab.se/docs/application-hosting/dash/

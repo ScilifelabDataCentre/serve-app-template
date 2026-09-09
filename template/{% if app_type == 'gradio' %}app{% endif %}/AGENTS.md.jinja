@@ -1,0 +1,14 @@
+# Gradio application rules
+
+This directory is the user-owned application area.
+
+- Keep `main.py` as the container entry point unless Docker, CI and root guidance change together.
+- Keep Serve port 7860 and external binding through `GRADIO_SERVER_NAME=0.0.0.0`.
+- Do not add `auth=` or another application-level login/user system.
+- Keep `share=False`; SciLifeLab Serve provides the hosted URL.
+- Uploaded/temp files should be ephemeral unless intentionally written to an approved Serve storage mount path.
+- Do not persist sensitive/personal/user data.
+- Keep runtime dependencies in `requirements.txt`; starter policy uses exact `==` pins.
+- The current Serve Gradio guide reports a known deployment issue with Private/Project permissions; deployment guidance uses Link/Public.
+
+Reference: https://serve.scilifelab.se/docs/application-hosting/gradio/

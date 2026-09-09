@@ -1,0 +1,100 @@
+# Deploy {{ project_name }} to SciLifeLab Serve
+
+This checklist is for the generated **{{ app_type }}** profile.
+
+## 1. Validate locally
+
+```bash
+python scripts/preflight.py --strict
+python -m unittest discover -s tests -v
+docker build --platform linux/amd64 -t {{ project_slug }}:local .
+docker run --rm -p {{ app_port }}:{{ app_port }} {{ project_slug }}:local
+```
+
+Open `http://localhost:{{ app_port }}` and test the important user path.
+
+## 2. Publish the source
+
+Push this repository to the public source location you plan to submit to Serve. Do not commit sensitive data or secrets.
+
+## 3. Publish a container image
+
+The included `docker-image-ghcr.yml` workflow publishes on pushes to `main` and can also be run manually. It uses:
+
+- `linux/amd64`;
+- GHCR;
+- a timestamp + short commit SHA + workflow run/attempt tag;
+- no `latest` tag.
+
+After the first GHCR image is created, make the GitHub package **Public**. Serve must be able to fetch it without your credentials and may fetch it again later.
+
+Copy the exact image reference from the workflow summary, for example:
+
+```text
+ghcr.io/owner/repository:20260908-121530-a1b2c3d-42-1
+```
+
+Use a new tag for every deployed version.
+
+## 4. Prepare project storage only if needed
+
+In your Serve project:
+
+1. Open **Settings → Storage**.
+2. Review available project storage.
+3. Define the mount path your container expects.
+4. Enable/request storage extension if needed.
+5. Select that mount path later in the app form.
+
+Do not use project storage for personal/sensitive data or a user database.
+
+## 5. Create the app in Serve
+
+Use the **{{ app_type }}** app card when Serve provides it; for the Custom profile use the Custom app flow.
+
+Enter at least:
+
+| Field | Value/check |
+| --- | --- |
+| Subdomain | desired public name or let Serve choose |
+| Storage | selected mount path, or None |
+| Hardware | default unless you have measured need for more |
+| Port | `{{ app_port }}` |
+| Image | exact public registry image **with a new unique tag** |
+| Title | user-facing title |
+| Description | concise scientific/application description |
+| Subjects/keywords | relevant searchable terms |
+| Permission | Link/Public as appropriate; see note below |
+| Creators | authors/contributors |
+| Source code URL | this source repository/archival source |
+
+{% if app_type == 'gradio' -%}
+**Gradio permission note:** the current Serve guide reports a known bug with Private and Project permissions. Use **Link** or **Public** until the guide says the issue is resolved.
+{% else -%}
+Private and Project are intended only as temporary development states. Link is useful for unlisted review; applications are expected to become Public.
+{% endif %}
+
+## 6. Update an existing deployment
+
+Do not reuse an old image tag.
+
+```text
+change code → test → push → publish new image tag → change Serve Image field → Update
+```
+
+If Serve shows the old version, first confirm that the Image field points to a genuinely new tag.
+
+## 7. Operational constraints to remember
+
+- Current default allocation: 2 vCPU / 4 GB RAM.
+- Serve documents larger requests up to 12 vCPU / 48 GB when need is demonstrated.
+- Current generic upload limit: 100 MB unless an exception is arranged.
+- Logs show the recent debugging window (currently 24 hours); do not use them to track users.
+- Container images must remain available.
+- Applications must not contain sensitive data, user registration or user databases.
+
+## References
+
+- Framework guide: {{ serve_doc_url }}
+- Other/custom app contract: https://serve.scilifelab.se/docs/application-hosting/other/
+- File management: https://serve.scilifelab.se/docs/files/

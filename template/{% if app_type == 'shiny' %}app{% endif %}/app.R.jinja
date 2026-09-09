@@ -1,0 +1,17 @@
+library(shiny)
+
+ui <- fluidPage(
+  titlePanel("{{ project_name }}"),
+  p("{{ project_description }}"),
+  textInput("name", "Name"),
+  textOutput("message")
+)
+
+server <- function(input, output, session) {
+  output$message <- renderText({
+    if (!nzchar(input$name)) return("")
+    paste0("Hello, ", input$name, ". This Shiny app is ready for SciLifeLab Serve.")
+  })
+}
+
+shinyApp(ui, server)

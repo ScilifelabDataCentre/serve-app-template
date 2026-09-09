@@ -1,0 +1,100 @@
+_min_copier_version: "9.3.0"
+_subdirectory: template
+_templates_suffix: .jinja
+_answers_file: .copier-answers.yml
+_skip_if_exists:
+  - "app/**"
+_message_after_copy: |
+  Project created.
+
+  Next steps:
+    1. Read README.md and AGENTS.md.
+    2. Edit the starter under app/.
+    3. Run: python scripts/preflight.py --strict
+    4. Build: docker build --platform linux/amd64 -t local/{{ project_slug }}:dev .
+    5. Follow DEPLOY.md when you are ready for SciLifeLab Serve.
+_message_after_update: |
+  Template update applied. Review the diff and resolve any conflicts before committing.
+  The app/** path is intentionally protected by _skip_if_exists so template updates do not overwrite your application code.
+
+project_name:
+  type: str
+  help: Human-readable project name.
+  default: My Serve App
+
+project_slug:
+  type: str
+  help: "Repository/image-friendly name: lowercase letters, digits and dashes."
+  default: my-serve-app
+  validator: >-
+    {% if not (project_slug | regex_search('^[a-z][a-z0-9-]*$')) %}
+    Use lowercase letters, digits and dashes, and start with a letter.
+    {% endif %}
+
+project_description:
+  type: str
+  help: One-sentence description used in the generated README.
+  default: A web application prepared for SciLifeLab Serve.
+
+author_name:
+  type: str
+  help: Optional maintainer/author name.
+  default: ""
+
+app_type:
+  type: str
+  help: Choose the application framework/profile.
+  choices:
+    Gradio: gradio
+    Streamlit: streamlit
+    Dash: dash
+    Shiny (R): shiny
+    Custom Python (FastAPI starter): custom
+  default: gradio
+
+python_version:
+  type: str
+  help: Python base-image version. Not used by Shiny.
+  default: "3.12"
+  when: "{{ app_type != 'shiny' }}"
+
+r_version:
+  type: str
+  help: rocker/shiny base-image tag. Only used by Shiny.
+  default: "4.4.1"
+  when: "{{ app_type == 'shiny' }}"
+
+include_devcontainer:
+  type: bool
+  help: Include a VS Code dev container configuration.
+  default: true
+
+app_port:
+  type: int
+  when: false
+  default: >-
+    {% if app_type == 'gradio' %}7860{% elif app_type == 'streamlit' %}8501{% elif app_type == 'shiny' %}3838{% else %}8000{% endif %}
+
+serve_uid:
+  type: int
+  when: false
+  default: >-
+    {% if app_type == 'shiny' %}999{% else %}1000{% endif %}
+
+entrypoint:
+  type: str
+  when: false
+  default: >-
+    {% if app_type == 'gradio' %}app/main.py{% elif app_type == 'shiny' %}app/app.R{% else %}app/app.py{% endif %}
+
+health_path:
+  type: str
+  when: false
+  default: >-
+    {% if app_type == 'streamlit' %}/_stcore/health{% elif app_type == 'custom' %}/health{% else %}/{% endif %}
+
+serve_doc_url:
+  type: str
+  when: false
+  default: >-
+    {% if app_type == 'gradio' %}https://serve.scilifelab.se/docs/application-hosting/gradio/{% elif app_type == 'streamlit' %}https://serve.scilifelab.se/docs/application-hosting/streamlit/{% elif app_type == 'dash' %}https://serve.scilifelab.se/docs/application-hosting/dash/{% elif app_type == 'shiny' %}https://serve.scilifelab.se/docs/application-hosting/shiny/{% else %}https://serve.scilifelab.se/docs/application-hosting/other/{% endif %}

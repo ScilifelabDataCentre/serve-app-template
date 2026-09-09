@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+{% if app_type != 'shiny' %}  - package-ecosystem: pip
+    directory: /app
+    schedule:
+      interval: monthly
+{% endif %}

@@ -1,0 +1,20 @@
+from dash import Dash, Input, Output, dcc, html
+
+app = Dash(__name__)
+server = app.server
+
+app.layout = html.Main(
+    [
+        html.H1("{{ project_name }}"),
+        html.P("{{ project_description }}"),
+        dcc.Input(id="name", type="text", placeholder="Your name"),
+        html.P(id="message"),
+    ]
+)
+
+
+@app.callback(Output("message", "children"), Input("name", "value"))
+def update_message(name):
+    if not name:
+        return ""
+    return f"Hello, {name}. This Dash app is ready for SciLifeLab Serve."

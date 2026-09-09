@@ -1,0 +1,13 @@
+from fastapi import FastAPI
+
+app = FastAPI(title="{{ project_name }}", description="{{ project_description }}")
+
+
+@app.get("/")
+def root():
+    return {"message": "{{ project_name }} is ready for SciLifeLab Serve."}
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

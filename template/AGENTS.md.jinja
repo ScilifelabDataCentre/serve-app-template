@@ -1,0 +1,133 @@
+# AGENTS.md — {{ project_name }}
+
+This is the repository-wide contract for work on this generated SciLifeLab Serve application. Also read `app/AGENTS.md` before editing application/runtime files.
+
+## Current profile
+
+- Framework/profile: **{{ app_type }}**
+- Entry point: `{{ entrypoint }}`
+- Container port: **{{ app_port }}**
+- Runtime user ID: **{{ serve_uid }}**
+- Framework guide: {{ serve_doc_url }}
+- FAIR applications: https://serve.scilifelab.se/docs/application-hosting/fair/
+- Serve documentation last audited by the template: **2026-09-08**
+
+## When the user gives you existing application code
+
+The normal task in a generated repository is **not** to redesign deployment. The Dockerfile, port, runtime user, CI, and preflight checks were already selected by Copier for the `{{ app_type }}` profile.
+
+When a user pastes or provides an existing app:
+
+1. Read this file and `app/AGENTS.md`.
+2. Inspect the supplied app as a unit: entry point, local modules, dependency/lock files, assets/data, file reads/writes, environment variables, external commands, and system-library needs. Never migrate secrets.
+3. Preserve the user's app/scientific behavior unless a change is required for Serve compatibility.
+4. Put or adapt the code at the canonical entry point: `{{ entrypoint }}`. Keep supporting modules/assets under `app/` unless there is a clear reason otherwise.
+5. Reuse the user's dependency/lock file when available. Otherwise infer packages from imports, resolve and test compatible versions, then pin the versions actually used. Never invent package versions just to satisfy the pinning rule.
+6. Do not replace the generated Dockerfile with a model-written Dockerfile merely because the user's local launch command is different. Start from the generated profile. If the app genuinely needs OS packages or an extra build step, extend that Dockerfile minimally while preserving the generated Serve port/user/startup/platform contract.
+7. Run preflight, tests, and a Docker smoke test when Docker is available before saying the app is ready.
+
+{% if app_type == 'dash' -%}
+For imported Dash code specifically:
+
+- ensure the Dash object remains available as `app` or update code consistently;
+- expose `server = app.server` because the generated container launches `gunicorn ... app:server`;
+- keep any development-only `app.run(...)` call under `if __name__ == "__main__":` so importing the module in Gunicorn does not start a second development server;
+- keep port 8000 and the generated Gunicorn command unless the Serve profile itself is intentionally being changed.
+{% elif app_type == 'gradio' -%}
+For imported Gradio code, keep the generated `app/main.py` entry point and ensure hosted launch behavior does not add `auth` or `share=True`; the container provides the externally reachable host/port settings.
+{% elif app_type == 'streamlit' -%}
+For imported Streamlit code, keep the generated `app/app.py` entry point. The generated container starts Streamlit and supplies the external address/port; application code normally should not start its own web server.
+{% elif app_type == 'shiny' -%}
+For imported Shiny code, place the app under the generated `app/` tree so the Dockerfile can copy it to `/srv/shiny-server`. Bring along required R files/assets and introduce a reproducible dependency workflow (preferably `renv`) for non-trivial apps.
+{% else -%}
+For imported custom Python code, preserve the generated startup-script contract. If you replace FastAPI with another server, update the project-local startup command and validation together while keeping the Serve port/user/binding requirements.
+{% endif %}
+
+## Required behavior
+
+1. Package and run the application as a Docker image.
+2. Keep the server on port `{{ app_port }}`; it is within Serve's allowed 3000–9999 range.
+3. Bind the server so it is reachable outside the container (`0.0.0.0` where the framework exposes a bind setting).
+4. Build/publish for `linux/amd64`.
+5. Run as non-root using the profile's expected UID (`{{ serve_uid }}`).
+6. Publish every new deployment with a **new unique image tag**. Never deploy a mutable `latest` tag.
+7. Keep the container image publicly available/retrievable while Serve hosts the app. GHCR packages may need their visibility changed to Public.
+8. Keep code, data and model assets compatible with Serve's public application model. Do not add sensitive/personal data.
+9. Do not add user registration, a user database, or persistent per-user state. A later visit should return to default state.
+10. Do not assume a managed database exists. Project persistent storage may hold files or SQLite only when they contain no user/personal/sensitive data.
+11. Use Serve Project Settings → Storage to define mount paths; select the mount path in the app form when storage is needed.
+12. Do not use logs for analytics or user tracking. Serve currently exposes only recent (24-hour) debugging logs.
+13. Treat Private/Project permissions as temporary development states; Link is appropriate for unlisted review and Public is the intended long-term state.
+14. Keep uploads within the current Serve limits unless the Serve team has approved an exception; the general guide currently states 100 MB.
+15. Default Serve compute is 2 vCPU and 4 GB RAM. Optimize for that before requesting more; Serve documents requests up to 12 vCPU / 48 GB with demonstrated need.
+
+{% if app_type == 'gradio' -%}
+## Gradio-specific Serve rules
+
+- Keep `app/main.py` as the entry point unless Docker, CI and validation are updated together.
+- Keep port 7860 and `GRADIO_SERVER_NAME=0.0.0.0`.
+- Do not add Gradio authentication or `share=True`; Serve provides the hosting URL/access layer.
+- Keep `GRADIO_TEMP_DIR` on a writable path and avoid retaining uploads unnecessarily.
+- The current Serve Gradio guide reports a known issue with **Private** and **Project** permissions. Use **Link** or **Public** until the documentation changes.
+{% elif app_type == 'streamlit' -%}
+## Streamlit-specific Serve rules
+
+- Keep `app.py` directly in the Docker `WORKDIR` after copy.
+- Keep port 8501 and `--server.address=0.0.0.0`.
+- Keep usage-statistics gathering disabled in the container command.
+- The CI health check uses `/_stcore/health`.
+{% elif app_type == 'dash' -%}
+## Dash-specific Serve rules
+
+- `app/app.py` must expose `server = app.server` for Gunicorn.
+- Keep Gunicorn bound to `0.0.0.0:8000`.
+- UID 1000 is a **template policy** for Dash. The current Dash guide demonstrates Gunicorn/8000 but does not itself show a non-root-user rule.
+{% elif app_type == 'shiny' -%}
+## Shiny-specific Serve rules
+
+- Keep the app under `/srv/shiny-server` and serve it with Shiny Server.
+- Keep port 3838.
+- The current Serve Shiny guide explicitly uses the `shiny` user with UID 999. This is a documented framework-specific exception to the general custom-app guide's UID-1000 rule.
+- When real R dependencies are added, prefer a reproducible `renv` workflow based on the current Serve Shiny example.
+{% else -%}
+## Custom Python-specific Serve rules
+
+- The general Serve custom-app guide requires UID 1000.
+- Keep an executable `start-script.sh` in Docker `WORKDIR` and use it as the container startup command.
+- This starter uses FastAPI/Uvicorn only as an example. If you replace the framework, preserve the Serve container contract.
+{% endif %}
+
+
+## Research-output recommendations
+
+The current Serve FAIR-applications guide also recommends durable archival/versioning, suitable software and data licenses, locked language/package/data versions, a useful README, and citation metadata such as `CITATION.cff`. Preserve `REPRODUCIBILITY.md` as guidance, but do not confuse these recommendations with machine-enforced container requirements. Project owners remain responsible for applicable funder/institutional/ethical requirements.
+
+## Repository policy
+
+- Keep Python starter runtime dependencies exactly pinned with `==` unless the project explicitly adopts another reproducibility policy.
+- Never commit `.env`, credentials, API tokens, private keys, registry passwords or other secrets.
+- Disable optional telemetry/analytics where the starter already does so.
+- `app/**` belongs to this project and is protected from Copier template updates. Template-managed infrastructure lives mainly in root docs, `scripts/` and `.github/`.
+- Treat `app_type` as immutable for this generated project. If the application must move to another framework profile, generate a new project and migrate deliberately.
+
+## Before declaring a change complete
+
+Run:
+
+```bash
+python scripts/preflight.py --strict
+python -m unittest discover -s tests -v
+docker build --platform linux/amd64 -t {{ project_slug }}:test .
+```
+
+When Docker is available, run the container and verify the health/page at `http://localhost:{{ app_port }}{{ health_path }}`.
+
+If you change ports, Docker startup, user identity, storage behavior, permissions, deployment assumptions, or framework structure, re-check the current Serve documentation rather than relying only on this file.
+
+## References
+
+- Serve docs: https://serve.scilifelab.se/docs/
+- General/custom hosting contract: https://serve.scilifelab.se/docs/application-hosting/other/
+- File management: https://serve.scilifelab.se/docs/files/
+- Framework guide: {{ serve_doc_url }}
+- FAIR applications: https://serve.scilifelab.se/docs/application-hosting/fair/

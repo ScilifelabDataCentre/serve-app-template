@@ -1,0 +1,19 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    USER=appuser \
+    HOME=/home/appuser
+
+RUN useradd -m -u 1000 "$USER"
+WORKDIR $HOME/app
+
+COPY app/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=1000:1000 app/ ./
+
+USER appuser
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=3)" || exit 1
+CMD ["gunicorn", "--bind=0.0.0.0:8000", "--workers=2", "--threads=2", "app:server"]

@@ -1,0 +1,12 @@
+# Shiny application rules
+
+This directory is the user-owned application area.
+
+- Keep `app.R` as the minimal Shiny application entry point and copy the app under `/srv/shiny-server`.
+- Keep Shiny Server on port 3838.
+- Preserve runtime user `shiny` with UID 999 unless the current Serve Shiny documentation changes. This is an explicit framework-specific exception to the generic custom-app UID-1000 guidance.
+- Do not add application user registration, a user database, sensitive data, or persistent per-user state.
+- Use approved Serve storage mount paths only for non-sensitive files required by the app.
+- When adding real R package dependencies, use a reproducible `renv` workflow following the current Serve Shiny guide rather than ad-hoc install commands.
+
+Reference: https://serve.scilifelab.se/docs/application-hosting/shiny/

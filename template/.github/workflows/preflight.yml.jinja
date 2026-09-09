@@ -1,0 +1,40 @@
+name: Preflight and container smoke test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate repository contract
+        run: |
+          python scripts/preflight.py --strict
+          python -m unittest discover -s tests -v
+      - name: Build linux/amd64 image
+        run: docker buildx build --platform linux/amd64 --load -t serve-smoke:test .
+      - name: Run smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run -d --name serve-smoke -p {{ app_port }}:{{ app_port }} serve-smoke:test
+          trap 'docker logs serve-smoke || true; docker rm -f serve-smoke >/dev/null 2>&1 || true' EXIT
+          for i in $(seq 1 60); do
+            if curl --fail --silent --show-error "http://127.0.0.1:{{ app_port }}{{ health_path }}" >/dev/null; then
+              echo "Container is healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Container did not become healthy"
+          exit 1

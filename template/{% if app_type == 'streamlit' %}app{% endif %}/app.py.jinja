@@ -1,0 +1,9 @@
+import streamlit as st
+
+st.set_page_config(page_title="{{ project_name }}")
+st.title("{{ project_name }}")
+st.write("{{ project_description }}")
+
+name = st.text_input("Name")
+if name:
+    st.success(f"Hello, {name}. This Streamlit app is ready for SciLifeLab Serve.")

@@ -1,0 +1,13 @@
+# Custom Python application rules
+
+This directory is the user-owned application area. The starter uses FastAPI, but the important contract is SciLifeLab Serve's generic custom-app contract.
+
+- Keep the server reachable on `0.0.0.0:8000`, or update Docker/metadata/CI/preflight consistently if you intentionally choose another allowed Serve port.
+- Keep runtime UID 1000.
+- Keep `start-script.sh` in Docker `WORKDIR` and use it as the startup command.
+- If replacing FastAPI, preserve the startup-script and non-root container behavior required by the current Serve custom-app guide.
+- Do not add application user registration, a user database, sensitive data, or persistent per-user state.
+- Use approved Serve storage mount paths only for non-sensitive files required by the app.
+- Keep runtime dependencies in `requirements.txt`; starter policy uses exact `==` pins.
+
+Reference: https://serve.scilifelab.se/docs/application-hosting/other/

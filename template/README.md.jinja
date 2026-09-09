@@ -1,0 +1,102 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+This repository was generated from the SciLifeLab Serve multi-app Copier template using the **{{ app_type }}** profile.
+
+## Quick start
+
+```bash
+python scripts/preflight.py --strict
+python -m unittest discover -s tests -v
+docker build --platform linux/amd64 -t {{ project_slug }}:local .
+docker run --rm -p {{ app_port }}:{{ app_port }} {{ project_slug }}:local
+```
+
+Open http://localhost:{{ app_port }}.
+
+## Bring an existing app with an AI coding agent
+
+This generated repository is already the final `{{ app_type }}` project. The agent should normally **keep the generated Dockerfile** and adapt your existing code to it.
+
+Give the agent your code and a prompt like:
+
+```text
+Read AGENTS.md and app/AGENTS.md first. Replace the starter with my existing
+{{ app_type }} application while preserving its behavior. Use the canonical
+entry point {{ entrypoint }}, include its required modules/assets, and update
+runtime dependencies using versions you actually verify. Start from the generated
+Dockerfile; extend it only if my app genuinely needs extra system packages/build
+steps, while keeping the SciLifeLab Serve port/user/startup/platform contract. Run
+preflight/tests and Docker smoke testing if Docker is available.
+
+<PASTE OR POINT TO MY APP CODE>
+```
+
+The Dockerfile is profile infrastructure, not something you normally need to ask the agent to recreate.
+
+## Project layout
+
+```text
+.
+├── app/                    # Your application code
+├── Dockerfile              # Serve-compatible container definition
+├── AGENTS.md               # Cross-cutting Serve rules for people/agents
+├── DEPLOY.md               # Deployment checklist
+├── REPRODUCIBILITY.md      # FAIR/data/versioning/citation guidance
+├── CITATION.cff            # Citation metadata starter
+├── scripts/
+│   ├── preflight.py        # Local contract checks
+│   └── docs_drift.py       # Checks current Serve docs for known markers
+├── tests/                  # Contract smoke tests
+└── .github/workflows/      # Validation and GHCR publishing
+```
+
+Framework entry point: `{{ entrypoint }}`  
+Container port: `{{ app_port }}`  
+Runtime UID: `{{ serve_uid }}`
+
+Read `app/AGENTS.md` before changing framework startup behavior.
+
+## Development sequence
+
+1. Edit files under `app/`.
+2. Keep application behavior compatible with `AGENTS.md`.
+3. Run `python scripts/preflight.py --strict`.
+4. Run the tests.
+5. Build and run the Docker image locally.
+6. Push to GitHub; CI validates and the publish workflow creates a uniquely tagged GHCR image.
+7. Make the GHCR package public.
+8. Follow `DEPLOY.md` to create/update the app on SciLifeLab Serve.
+
+## Important Serve constraints
+
+- Use Docker and build for `linux/amd64`.
+- Keep app code/data appropriate for Serve's public hosting model.
+- Do not store sensitive/personal data or implement user registration/user databases.
+- Use a unique image tag for every deployment; do not deploy `latest`.
+- Keep the published image available while the app is hosted.
+- Configure persistent storage through Serve project mount paths when needed.
+- For research release quality, also review `REPRODUCIBILITY.md` and complete `CITATION.cff`.
+
+See `AGENTS.md` for the detailed contract and its references.
+
+## Updating from the template
+
+Commit your work first, then run:
+
+```bash
+copier update
+```
+
+Review the resulting diff and resolve conflicts before committing. `app/**` is protected from normal template updates so your application code remains user-owned. Treat `app_type` as immutable; generate a new repository if you need to change frameworks.
+
+## Deployment
+
+See [`DEPLOY.md`](DEPLOY.md).
+
+## References
+
+- SciLifeLab Serve: https://serve.scilifelab.se/docs/
+- {{ app_type | capitalize }} hosting guide: {{ serve_doc_url }}
+- Copier updates: https://copier.readthedocs.io/en/stable/updating/

@@ -1,0 +1,22 @@
+{% if app_type == 'shiny' -%}
+{
+  "name": "{{ project_name }}",
+  "image": "ghcr.io/rocker-org/devcontainer/r-ver:{{ r_version.split('.')[0] }}.{{ r_version.split('.')[1] }}",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "python scripts/preflight.py"
+}
+{% else -%}
+{
+  "name": "{{ project_name }}",
+  "image": "mcr.microsoft.com/devcontainers/python:1-{{ python_version }}-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "python -m pip install -r app/requirements.txt && python scripts/preflight.py"
+}
+{% endif -%}

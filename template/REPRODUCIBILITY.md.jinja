@@ -1,0 +1,27 @@
+# Reproducibility, data and citation
+
+This file follows SciLifeLab Serve's FAIR-application recommendations. These items support good research-software practice; they are not all container-runtime requirements.
+
+## Code
+
+- Keep a clear README with build/run instructions.
+- Keep runtime versions reproducible. This starter pins Python packages exactly; Shiny projects should add `renv` when real R dependencies are introduced.
+- Create versioned releases instead of relying only on a moving branch.
+- The generated code uses the MIT license. Change it deliberately if your project needs another appropriate software license.
+
+## Data
+
+- Do not put sensitive/personal data on SciLifeLab Serve.
+- Version the data used by each application release.
+- Use an appropriate **data** license separately from the software license when you publish research data.
+- For large or discipline-specific datasets, use an appropriate data repository and a persistent reference rather than treating GitHub or the Serve persistent volume as archival storage.
+
+## Archival release
+
+Serve's FAIR guide recommends depositing code and data in a repository that provides persistent identifiers and long-term availability; it gives Zenodo as a general example and describes GitHub–Zenodo release archiving.
+
+## Citation
+
+`CITATION.cff` is included as a small starting point. Replace the placeholder contributor information and add the software/data/article identifiers that users should cite.
+
+Reference: https://serve.scilifelab.se/docs/application-hosting/fair/

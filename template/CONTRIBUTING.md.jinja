@@ -1,0 +1,10 @@
+# Contributing
+
+Before changing this application:
+
+1. Read `AGENTS.md` and `app/AGENTS.md`.
+2. Keep the selected framework profile's port/startup/runtime-user contract intact unless all dependent files are updated together.
+3. Run `python scripts/preflight.py --strict`.
+4. Run `python -m unittest discover -s tests -v`.
+5. Build the Docker image for `linux/amd64` and smoke-test it when Docker is available.
+6. Do not commit secrets, sensitive data, personal data, large private assets, or user databases.
