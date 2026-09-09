@@ -221,7 +221,7 @@ The generated project and codes should contain the exact command and port for yo
 
 Install and start **Docker Desktop** before continuing.
 
-Docker Desktop installation: `DOCKER_DESKTOP_INSTALL_LINK`
+[Docker Desktop installation guide](https://docs.docker.com/get-started/get-docker/)
 
 #### Build the image
 
