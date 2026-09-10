@@ -250,13 +250,13 @@ Great! Now You have a working application and it is publicly avialable!
 1. Sign in to [SciLifeLab Serve](https://serve.scilifelab.se/).
 2. Create a project, or open an existing project.
 3. Fill out the form so that it accurately describes your application. you will find some suggestions in the README file of your repository. Please make sure to double check the required values there such as correct descriptions, creator list, etc.
-4. Paste the public GHCR image address into the **Image** field.
+4. Paste the public `image value` (see below) into the **Image** field.
 5. Enter the port shown in the generated README or Dockerfile.
 6. Add the GitHub repository URL as the **Source code URL**.
 7. Fill in the title, description, permissions, and other application information.
 8. Create the app.
 
-The image value should look similar to:
+The `image value` should look similar to:
 
 If you followed **step 2a (for example, Docker Hub)**:
 
