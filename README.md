@@ -1,7 +1,7 @@
 
 # SciLifeLab Serve multi-app template
 
-This repository helps you turn an idea or existing code into a web application that can be deployed on [SciLifeLab Serve](https://serve.scilifelab.se/). You can also use AI agents, coding assistants, or chatbots to help with development.
+This repository provides a template that allows you to start creating a application that can be deployed on [SciLifeLab Serve](https://serve.scilifelab.se/). This template is geared towards those who intend to use AI agents, coding assistants, or chatbots to help with development of the application but it is also suitable in case you are planning to develop the application yourself.
 
 Supported application types:
 
@@ -11,7 +11,7 @@ Supported application types:
 - Shiny (R)
 - Custom Python web apps, with FastAPI as the starter example
 
-**You do not need to know or specify the application type. If you use a chatbot, AI or coding assistant, give it the prompt(s) mentioned below. It will create the application for you.**
+**You do not need to know or specify the application type. If you use a chatbot, AI or coding assistant, give it the prompt(s) mentioned below. It will create the application for you. However, please keep in mind that as an application creator you are always responsible for the accuracy of the application-content, it's correctness, and security (regardless of which tools you use).**
 
 ---
 
@@ -31,7 +31,7 @@ https://github.com/ScilifelabDataCentre/serve-template-multi-app
 
 Create a small working web application for this idea:
 
-<DESCRIBE YOUR IDEA>
+<TO-DO: DESCRIBE YOUR IDEA>
 
 Create all files needed to run it locally with Docker and deploy it through
 GitHub to SciLifeLab Serve.
@@ -60,7 +60,7 @@ https://github.com/ScilifelabDataCentre/serve-template-multi-app
 
 Here is my existing code:
 
-<REPOSITORY LINK, LOCAL DIRECTORY, CODE PASTED HERE, OR FILES ATTACHED>
+<TO-DO: REPOSITORY LINK, LOCAL DIRECTORY, CODE PASTED HERE, OR FILES ATTACHED>
 
 Turn this into a working web application that I can run with Docker and deploy
 to SciLifeLab Serve.
@@ -141,28 +141,89 @@ Your complete project should contain the application code, dependencies, Dockerf
 
 ---
 
-### Step 2. Build the Docker image using GitHub
+### Step 2. Choose how you want to build the Docker image
 
-By now you should have your application codes ready in a project repository. Follow the generated project's README. The common test and deployment steps are also described there. Execute them. If all okay then follow the next steps.
+By now you should have your application code ready in a project repository. Follow the generated project's README. The common test and deployment steps are also described there. Execute them. If all okay then follow the next steps.
 
 
-#### a. Put the project on GitHub
+#### a. Build the Docker image locally using Docker Desktop
 
-Create an empty GitHub repository for your application.
+The generated project and codes should contain the exact command and port for your application. Follow its README in case it differs from the example below.
 
-Then, from your application project directory:
+**Install Docker**
+
+Install and start **Docker Desktop** before continuing.
+
+[Docker Desktop installation guide](https://docs.docker.com/get-started/get-docker/)
+
+**Build the image**
+
+Run in a terminal from the directory containing the `Dockerfile`:
+
+```bash
+docker build --platform linux/amd64 -t <APPLICATION-NAME>:<VERSION-TAG> .
+```
+
+Check that the image exists:
+
+```bash
+docker image ls
+```
+
+**Run the image**
+
+The generated README should tell you which port the application uses.
+
+Run:
+
+```bash
+docker run --rm -p <PORT>:<PORT> <APPLICATION-NAME>:<VERSION-TAG>
+```
+
+For example, if the application uses port `8000`:
+
+```bash
+docker run --rm -p 8000:8000 <APPLICATION-NAME>:<VERSION-TAG>
+```
+
+Then open:
+
+```text
+http://localhost:8000>
+```
+
+in your browser. Test it.
+
+Stop the application with `Ctrl+C` in your terminal.
+
+Finally push to the public registry:
+
+```bash
+docker push <YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<APPLICATION-NAME>:<VERSION-TAG>
+```
+
+---
+
+#### b. Build the Docker image using GitHub Actions workflow
+
+
+**Put the project on GitHub**
+
+Create an empty GitHub repository for your application. Make sure to set it `public`.
+
+Then, from your application project directory, in a terminal, run:
 
 ```bash
 git init
 git add .
 git commit -m "Initial application"
 git branch -M main
-git remote add origin https://github.com/<YOUR-USER-OR-ORG>/<YOUR-REPOSITORY>.git
+git remote add origin https://github.com/<YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<YOUR-REPOSITORY-NAME>.git
 git push -u origin main
 ```
 
 
-#### b. Build the Docker image
+**Build the Docker image using GitHub Actions workflow**
 
 Projects created from this template include a GitHub Actions workflow.
 
@@ -177,26 +238,18 @@ After pushing to `main`:
 The image will look similar to:
 
 ```text
-ghcr.io/<organization>/<repository>:<unique-tag>
+ghcr.io/<YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<YOUR-REPOSITORY-NAME>:<VERSION-TAG>
 ```
 
-#### c. Make the container image public
-
-[SciLifeLab Serve](https://serve.scilifelab.se/) must be able to download the image.
-
-On GitHub:
-
-**Package → Package settings → Change visibility → Public**
+Great! Now You have a working application and it is publicly avialable!
 
 ---
 
 ### Step 3. Deploy on [SciLifeLab Serve](https://serve.scilifelab.se/)
 
-Once the Docker image is available publicly:
-
 1. Sign in to [SciLifeLab Serve](https://serve.scilifelab.se/).
 2. Create a project, or open an existing project.
-3. Follow the generated application's README for the appropriate app creation form.
+3. Fill out the form so that it accurately describes your application. you will find some suggestions in the README file of your repository. Please make sure to double check the required values there such as correct descriptions, creator list, etc.
 4. Paste the public GHCR image address into the **Image** field.
 5. Enter the port shown in the generated README or Dockerfile.
 6. Add the GitHub repository URL as the **Source code URL**.
@@ -205,136 +258,22 @@ Once the Docker image is available publicly:
 
 The image value should look similar to:
 
-```text
-ghcr.io/<organization>/<repository>:<unique-tag>
+If you followed **step 2a (for example, Docker Hub)**:
+
+```
+docker.io/<YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<APPLICATION-NAME>:<VERSION-TAG>
+```
+
+If you followed **step 2b (GitHub)**:
+
+```
+ghcr.io/<YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<YOUR-REPOSITORY-NAME>:<VERSION-TAG>
 ```
 
 Congratulations! Your application is now published and open for all!
 
 ---
 
-## (Optional) Run your application locally
-
-The generated project and codes should contain the exact command and port for your application. Follow its README in case it differs from the example below.
-
-#### a. Install Docker
-
-Install and start **Docker Desktop** before continuing.
-
-[Docker Desktop installation guide](https://docs.docker.com/get-started/get-docker/)
-
-#### Build the image
-
-From the directory containing the `Dockerfile`:
-
-```bash
-docker build --platform linux/amd64 -t my-app:local .
-```
-
-Check that the image exists:
-
-```bash
-docker image ls
-```
-
-#### Run the image
-
-The generated README should tell you which port the application uses.
-
-Run:
-
-```bash
-docker run --rm -p <PORT>:<PORT> my-app:local
-```
-
-For example, if the application uses port `8000`:
-
-```bash
-docker run --rm -p 8000:8000 my-app:local
-```
-
-Then open:
-
-```text
-http://localhost:<PORT>
-```
-
-in your browser.
-
-Stop the application with `Ctrl+C`.
-
----
-
-## Repository structure and design
-
-```text
-.
-├── README.md                  # Main guide
-├── AGENTS.md                  # Detailed adaptation and maintenance rules
-├── copier.yml                 # Copier questions and framework settings
-├── profiles/                  # Plain Dockerfile references
-│   ├── gradio/
-│   ├── streamlit/
-│   ├── dash/
-│   ├── shiny/
-│   └── custom/
-├── template/                  # Files generated by Copier
-├── tests/                     # Template checks
-├── scripts/                   # Maintenance checks
-└── docs/
-    └── SERVE_REQUIREMENTS.md  # Serve requirements and source audit
-```
-
-Specialized [SciLifeLab Serve](https://serve.scilifelab.se/) products such as TissUUmaps and Depictio are intentionally outside this template because they have separate deployment workflows.
-
-### Adding another framework
-
-1. Confirm it fits the current [SciLifeLab Serve](https://serve.scilifelab.se/) container requirements.
-2. Record its entry point, startup command, port, runtime user, architecture, storage needs and health check.
-3. Add `profiles/<framework>/Dockerfile`.
-4. Add the framework to `copier.yml`.
-5. Add its Copier Dockerfile and starter application files.
-6. Add framework-specific validation and tests.
-7. Update `AGENTS.md` and `docs/SERVE_REQUIREMENTS.md`.
-
----
-
-## Development, contribution and release
-
-1. read `AGENTS.md`;
-2. verify any changed [SciLifeLab Serve](https://serve.scilifelab.se/) assumption against the current documentation;
-3. update `docs/SERVE_REQUIREMENTS.md` when needed;
-4. run the template tests and render checks; and
-5. build affected profiles for `linux/amd64` when Docker is available.
-
-```bash
-python -m pytest -q
-python tests/render_smoke.py
-python tests/copier_smoke.py
-```
-
-For a generated project:
-
-```bash
-python scripts/preflight.py --strict
-python -m unittest discover -s tests -v
-docker build --platform linux/amd64 -t serve-template-smoke:test .
-```
-
-### Release sequence
-
-1. Verify the current [SciLifeLab Serve](https://serve.scilifelab.se/) documentation.
-2. Update `docs/SERVE_REQUIREMENTS.md` if needed.
-3. Run the tests and render checks.
-4. Bump `template_version` in `template/.serve-template.json.jinja`.
-5. Update `CHANGELOG.md`.
-6. Commit and merge the release state.
-7. Create and push a PEP 440-compatible tag such as `v0.2.0`.
-8. Generate one project from the released Git URL and run an end-to-end Docker smoke test.
-
-Versioned Git tags are important because Copier uses them when comparing template versions during `copier update`.
-
----
 
 ## Security and data handling
 
@@ -342,7 +281,7 @@ Versioned Git tags are important because Copier uses them when comparing templat
 - Do not report credentials, sensitive data or exploitable security details in public issues.
 - Generated applications are intended for [SciLifeLab Serve](https://serve.scilifelab.se/)'s public application model.
 - Do not include personal or sensitive data, user databases or committed credentials in generated applications.
-- For platform-specific security or data-handling questions, follow the current [SciLifeLab Serve](https://serve.scilifelab.se/) documentation and use the [SciLifeLab Serve](https://serve.scilifelab.se/) team's published support channel when clarification is needed.
+- For platform-specific security or data-handling questions, follow the current [SciLifeLab Serve](https://serve.scilifelab.se/) documentation and use the [SciLifeLab Serve](https://serve.scilifelab.se/) team's official email: `serve@scilifelab.se`.
 
 ## References and license
 
