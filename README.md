@@ -21,7 +21,7 @@ Supported application types:
 
 #### a. I want to use a coding assistant, AI, or chatbot to create the application
 
-##### i. I only have an idea
+**i. I only have an idea**
 
 Give this prompt with your idea to a coding assistant, AI or chatbot:
 
@@ -43,7 +43,7 @@ Also create a README with the exact commands I should run to test and deploy it.
 ```
 ---
 
-##### ii. I already have some code
+**ii. I already have some code**
 
 Your code can be:
 
