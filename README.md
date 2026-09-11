@@ -1,7 +1,7 @@
 
-# SciLifeLab Serve multi-app template
+# SciLifeLab Serve app template
 
-This repository provides a template that allows you to start creating a application that can be deployed on [SciLifeLab Serve](https://serve.scilifelab.se/). This template is geared towards those who intend to use AI agents, coding assistants, or chatbots to help with development of the application but it is also suitable in case you are planning to develop the application yourself.
+This repository provides a template that allows you to start creating a application that can be published on [SciLifeLab Serve](https://serve.scilifelab.se/). This template is geared towards those who intend to use AI agents, coding assistants, or chatbots to help with development of the application but it is also suitable in case you are planning to develop the application yourself.
 
 Supported application types:
 
@@ -11,23 +11,23 @@ Supported application types:
 - Shiny (R)
 - Custom Python web apps, with FastAPI as the starter example
 
-**You do not need to know or specify the application type. If you use a chatbot, AI or coding assistant, give it the prompt(s) mentioned below. It will create the application for you. However, please keep in mind that as an application creator you are always responsible for the accuracy of the application-content, it's correctness, and security (regardless of which tools you use).**
+**You do not need to know or specify the application type. If you use a chatbot, AI agents or coding assistant, give it the prompt(s) mentioned below. It will create the application for you. However, please keep in mind that as an application creator you are always responsible for the accuracy of the application-content and security (regardless of which tools you use).**
 
 ---
 
-## Deploy your application on [SciLifeLab Serve](https://serve.scilifelab.se/) in three quick steps!
+## Publish your application on [SciLifeLab Serve](https://serve.scilifelab.se/) in three quick steps!
 
 ### Step 1. Choose how you want to start
 
-#### a. I want to use a coding assistant, AI, or chatbot to create the application
+#### a. I want to use a coding assistant, AI agents, or chatbot to create the application
 
 **i. I only have an idea**
 
-Give this prompt with your idea to a coding assistant, AI or chatbot:
+Give this prompt with your idea (see `TO-DO:`) to a coding assistant, AI agents or chatbot:
 
 ```text
 Use this repository as the reference:
-https://github.com/ScilifelabDataCentre/serve-template-multi-app
+https://github.com/ScilifelabDataCentre/serve-app-template
 
 Create a small working web application for this idea:
 
@@ -52,11 +52,11 @@ Your code can be:
 * one or more files; or
 * code pasted directly into the conversation.
 
-Give this prompt with your code to your coding assistant, AI, or chatbot:
+Give this prompt with your code (see `TO-DO:`) to your coding assistant, AI agents, or chatbot:
 
 ```text
 Use this repository as the reference:
-https://github.com/ScilifelabDataCentre/serve-template-multi-app
+https://github.com/ScilifelabDataCentre/serve-app-template
 
 Here is my existing code:
 
@@ -81,7 +81,7 @@ Also create a README with the exact commands I should run to test and deploy it.
 ```
 
 
-The coding assistant, AI, or chatbot should create a complete project containing the application code, dependencies, Dockerfile, GitHub workflow, and deployment instructions.
+The coding assistant, AI agents, or chatbot should create a complete project containing the application code, dependencies, Dockerfile, GitHub workflow, and deployment instructions.
 
 ---
 
@@ -99,14 +99,14 @@ Create a new project:
 
 ```bash
 copier copy --vcs-ref v0.1.0 \
-  https://github.com/ScilifelabDataCentre/serve-template-multi-app \
-  my-apps
+  https://github.com/ScilifelabDataCentre/serve-app-template \
+  <YOUR-APPLICATION-NAME>
 ```
 
 Copier will ask a few setup questions and create the new directory:
 
 ```text
-my-app/
+<YOUR-APPLICATION-NAME>/
 ├── app/
 ├── Dockerfile
 ├── README.md
@@ -119,7 +119,7 @@ my-app/
 Then:
 
 ```bash
-cd my-app
+cd <YOUR-APPLICATION-NAME>
 ```
 
 Put or write your application code inside:
@@ -133,8 +133,9 @@ Follow the generated `README.md` for any application-specific requirements.
 If you are developing the template itself locally, you can test it without GitHub:
 
 ```bash
-cd serve-template-multi-app
-copier copy . ../my-app
+git clone https://github.com/ScilifelabDataCentre/serve-app-template.git
+cd serve-app-template
+copier copy . ../<YOUR-APPLICATION-NAME>
 ```
 
 Your complete project should contain the application code, dependencies, Dockerfile, GitHub workflow, and deployment instructions.
@@ -143,7 +144,7 @@ Your complete project should contain the application code, dependencies, Dockerf
 
 ### Step 2. Choose how you want to build the Docker image
 
-By now you should have your application code ready in a project repository. Follow the generated project's README. The common test and deployment steps are also described there. Execute them. If all okay then follow the next steps.
+By now you should have your application code ready in a project repository. Follow the generated project's README. The common test steps are described there. Execute them. If all are okay then follow the next steps.
 
 
 #### a. Build the Docker image locally using Docker Desktop
@@ -161,7 +162,7 @@ Install and start **Docker Desktop** before continuing.
 Run in a terminal from the directory containing the `Dockerfile`:
 
 ```bash
-docker build --platform linux/amd64 -t <APPLICATION-NAME>:<VERSION-TAG> .
+docker build --platform linux/amd64 -t <YOUR-APPLICATION-NAME>:<VERSION-TAG> .
 ```
 
 Check that the image exists:
@@ -177,13 +178,13 @@ The generated README should tell you which port the application uses.
 Run:
 
 ```bash
-docker run --rm -p <PORT>:<PORT> <APPLICATION-NAME>:<VERSION-TAG>
+docker run --rm -p <PORT>:<PORT> <YOUR-APPLICATION-NAME>:<VERSION-TAG>
 ```
 
 For example, if the application uses port `8000`:
 
 ```bash
-docker run --rm -p 8000:8000 <APPLICATION-NAME>:<VERSION-TAG>
+docker run --rm -p 8000:8000 <YOUR-APPLICATION-NAME>:<VERSION-TAG>
 ```
 
 Then open:
@@ -199,7 +200,7 @@ Stop the application with `Ctrl+C` in your terminal.
 Finally push to the public registry:
 
 ```bash
-docker push <YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<APPLICATION-NAME>:<VERSION-TAG>
+docker push <YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<YOUR-APPLICATION-NAME>:<VERSION-TAG>
 ```
 
 ---
@@ -208,6 +209,8 @@ docker push <YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<APPLICATION-NAME>:<VERSION
 
 
 **Put the project on GitHub**
+
+Make sure that `git` is installed. See [installation guide](https://git-scm.com/install/).
 
 Create an empty GitHub repository for your application. Make sure to set it `public`.
 
@@ -245,7 +248,7 @@ Great! Now You have a working application and it is publicly avialable!
 
 ---
 
-### Step 3. Deploy on [SciLifeLab Serve](https://serve.scilifelab.se/)
+### Step 3. Deploy the application on [SciLifeLab Serve](https://serve.scilifelab.se/)
 
 1. Sign in to [SciLifeLab Serve](https://serve.scilifelab.se/).
 2. Create a project, or open an existing project.
@@ -253,15 +256,14 @@ Great! Now You have a working application and it is publicly avialable!
 4. Paste the public `image value` (see below) into the **Image** field.
 5. Enter the port shown in the generated README or Dockerfile.
 6. Add the GitHub repository URL as the **Source code URL**.
-7. Fill in the title, description, permissions, and other application information.
-8. Create the app.
+7. Create the application.
 
 The `image value` should look similar to:
 
 If you followed **step 2a (for example, Docker Hub)**:
 
 ```
-docker.io/<YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<APPLICATION-NAME>:<VERSION-TAG>
+docker.io/<YOUR-ORGANIZATION OR YOUR-ACCOUNT-NAME>/<YOUR-APPLICATION-NAME>:<VERSION-TAG>
 ```
 
 If you followed **step 2b (GitHub)**:
@@ -280,16 +282,28 @@ Congratulations! Your application is now published and open for all!
 - Do not commit credentials, tokens or secrets.
 - Do not report credentials, sensitive data or exploitable security details in public issues.
 - Generated applications are intended for [SciLifeLab Serve](https://serve.scilifelab.se/)'s public application model.
-- Do not include personal or sensitive data, user databases or committed credentials in generated applications.
-- For platform-specific security or data-handling questions, follow the current [SciLifeLab Serve](https://serve.scilifelab.se/) documentation and use the [SciLifeLab Serve](https://serve.scilifelab.se/) team's official email: `serve@scilifelab.se`.
-
-## References and license
+- Do not include personal, patient or sensitive data, user databases or committed credentials in generated applications.
+- For platform-specific security or data-handling questions, follow the current [SciLifeLab Serve documentation](https://serve.scilifelab.se/docs/).
 
 ---
+
+## Contact
+
+ [SciLifeLab Serve](https://serve.scilifelab.se/) team's official email: `serve@scilifelab.se`.
+
+---
+
+## References
 
 - [SciLifeLab Serve documentation](https://serve.scilifelab.se/docs/)
 - [Copier documentation](https://copier.readthedocs.io/)
 
 The current [SciLifeLab Serve documentation](https://serve.scilifelab.se/docs/) is the source of truth for deployment requirements. `docs/SERVE_REQUIREMENTS.md` records the rules and framework-specific exceptions used by this template.
 
-License: MIT.
+---
+
+## License
+
+MIT.
+
+---
