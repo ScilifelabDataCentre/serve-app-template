@@ -23,6 +23,8 @@ Supported application types:
 
 **i. I only have an idea**
 
+> ⚠️ **“I only have an idea” means the scientific task is well-defined, but the code is not yet written. AI must not decide the research methodology.**
+
 Give this prompt with your idea (see `TO-DO:`) to a coding assistant, AI agents or chatbot:
 
 ```text
